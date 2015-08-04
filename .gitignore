@@ -2,4 +2,9 @@
 .project
 .settings/
 
+target/
+
+oracle.json
+/target/
+/target/
 /target/
