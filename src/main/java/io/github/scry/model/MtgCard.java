@@ -1,5 +1,6 @@
 package io.github.scry.model;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -25,7 +26,7 @@ public class MtgCard {
 
     String manaCost;
 
-    String type;
+    String type = "";
 
     String text;
 
@@ -36,6 +37,8 @@ public class MtgCard {
     Integer loyalty;
 
     List<Ruling> rulings;
+
+    List<String> colors = new ArrayList<>();
 
     // Set specific fields
 

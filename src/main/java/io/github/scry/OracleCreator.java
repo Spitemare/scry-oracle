@@ -7,9 +7,11 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -25,6 +27,7 @@ import io.github.scry.ScryOracleApplication.OracleProperties;
 import io.github.scry.model.MtgCard;
 import io.github.scry.model.MtgSet;
 import io.github.scry.model.Printing;
+import io.github.scry.sort.SetCardSorter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -44,6 +47,8 @@ public class OracleCreator implements ApplicationListener<ContextRefreshedEvent>
 
     OracleProperties oracleProperties;
 
+    SetCardSorter setCardSorter;
+
     @Override
     @SneakyThrows(IOException.class)
     public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -62,6 +67,9 @@ public class OracleCreator implements ApplicationListener<ContextRefreshedEvent>
 
     private Path download(URI uri) throws IOException {
         LOG.info("Downloading {}", uri);
+
+        if ("file".equals(uri.getScheme())) return Paths.get(uri);
+
         byte[] zip = restTemplate.getForObject(uri, byte[].class);
         LOG.info("Downloaded {}", uri);
         Path temp = Files.createTempFile("oracle", ".zip");
@@ -96,7 +104,9 @@ public class OracleCreator implements ApplicationListener<ContextRefreshedEvent>
                 if (set == null) continue;
 
                 LOG.info("Unmarshalled {}", set.getName());
-                for (MtgCard c : set.getCards()) {
+                List<MtgCard> cards = setCardSorter.sortCardsIn(set);
+
+                for (MtgCard c : cards) {
                     MtgCard card = map.getOrDefault(c.getName(), c);
                     card.getMultiverseids().addFirst(c.getMultiverseid());
                     card.getPrintings().addFirst(createPrinting(c, set));
@@ -113,6 +123,7 @@ public class OracleCreator implements ApplicationListener<ContextRefreshedEvent>
             card.setMultiverseid(null);
             card.setNumber(null);
             card.setRarity(null);
+            card.setColors(null);
         }
 
         return cards;
