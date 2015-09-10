@@ -21,7 +21,7 @@ class OldSetCardComparator implements Comparator<MtgCard> {
         return i == 0 ? card1.getName().compareTo(card2.getName()) : i;
     }
 
-    private char findColor(MtgCard card) {
+    protected char findColor(MtgCard card) {
         if (card.getType().contains("Land")) return 'L';
 
         List<String> colors = card.getColors();

@@ -24,6 +24,9 @@ public class SetCardSorter {
     public SetCardSorter(OracleProperties oracleProperties) {
         setComparators = oracleProperties.getSetOrders().stream().map(s -> s.split("\\|"))
                 .collect(Collectors.toMap(a -> a[0], a -> new OldSetCardComparator(a[1])));
+        setComparators.put("Limited Edition Beta", new BetaCardComparator());
+        setComparators.put("Legends", new LegendsCardComparator());
+        setComparators.put("Tempest", new TempestCardComparator());
     }
 
     public List<MtgCard> sortCardsIn(MtgSet set) {

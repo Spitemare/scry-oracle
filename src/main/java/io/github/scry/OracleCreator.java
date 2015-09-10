@@ -18,7 +18,6 @@ import java.util.zip.ZipFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonParser;
@@ -39,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired) )
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Slf4j
-public class OracleCreator implements ApplicationListener<ContextRefreshedEvent> {
+public class OracleCreator implements ApplicationListener<ContextReadyEvent> {
 
     RestTemplate restTemplate;
 
@@ -51,7 +50,7 @@ public class OracleCreator implements ApplicationListener<ContextRefreshedEvent>
 
     @Override
     @SneakyThrows(IOException.class)
-    public void onApplicationEvent(ContextRefreshedEvent event) {
+    public void onApplicationEvent(ContextReadyEvent event) {
         LOG.info("Creating new Oracle DB", oracleProperties.getDownloadUrl());
         Path zip = download(oracleProperties.getDownloadUrl());
         Path json = unzip(zip);
